@@ -1,6 +1,10 @@
 ---
 title: "Understanding the Beta Distribution"
-output: html_document
+#output: github_document
+#output: html_document
+output: 
+  html_document:
+    keep_md: true
 ---
 
 This post and the following posts are a simplification of a series of posts by [David Robinson](http://varianceexplained.org/statistics/beta_distribution_and_baseball/)
