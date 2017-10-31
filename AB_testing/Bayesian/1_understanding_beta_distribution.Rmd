@@ -1,6 +1,10 @@
 ---
 title: "Understanding the Beta Distribution"
-output: github_document
+#output: github_document
+#output: html_document
+output: 
+  html_document:
+    keep_md: true
 ---
 
 This post and the following posts are a simplification of a series of posts by [David Robinson](http://varianceexplained.org/statistics/beta_distribution_and_baseball/)
@@ -68,5 +72,6 @@ If we want to we can now estimate the value of the beta distribution ($\frac{\al
 Thus, after 100 hits and 300 at-bats, the expected value of the new beta distribution is: $\frac{81+100}{82+100+219+200} = 0.303$. Notice how this is lower than the naive estimate $\frac{100}{100+200} = 0.333$ but higher than the estimate you started of the season with ($\frac{81}{81+219} = 0.270$)
 
 Thus, the beta distribution is best for representing a probabilistic distribution of probabilities- the case where we don’t know what a probability is in advance, but we have some reasonable guesses.
+
 
 
