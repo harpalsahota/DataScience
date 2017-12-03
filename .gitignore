@@ -99,3 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Books
+Books/Hands-On Machine Learning with Scikit-Learn & Tensorflow/datasets/
+Books/Hands-On Machine Learning with Scikit-Learn & Tensorflow/images/
+
+#Pycharm
+.idea/
