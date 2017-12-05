@@ -16,3 +16,6 @@ Other sites that can offer datasets:
 
 - https://www.reddit.com/r/datasets/
 - https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research
+
+Speech
+- https://voice.mozilla.org/data
