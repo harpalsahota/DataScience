@@ -28,8 +28,29 @@ The related method of empirical Bayes estimation used beta distribution to impro
 
 Applying empirical Bayes to estimation of the baseball dataset with the aim of improving our estimate of each player's batting average.
 
-```{r}
+
+```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(tidyr)
 library(Lahman)
 
@@ -49,8 +70,21 @@ career <- Master %>%
   select(-playerID)
 ```
 
-```{r}
+
+```r
 head(career)
+```
+
+```
+## # A tibble: 6 x 4
+##   name               H    AB average
+##   <chr>          <int> <int>   <dbl>
+## 1 Hank Aaron      3771 12364  0.305 
+## 2 Tommie Aaron     216   944  0.229 
+## 3 Andy Abad          2    21  0.0952
+## 4 John Abadie       11    49  0.224 
+## 5 Ed Abbaticchio   772  3044  0.254 
+## 6 Fred Abbott      107   513  0.209
 ```
 
 Code does:
@@ -61,7 +95,8 @@ Code does:
 
 Top batters in history are (ones with highests batting average):
 
-```{R}
+
+```r
 library(knitr)
 career %>%
   arrange(desc(average)) %>%
@@ -69,16 +104,37 @@ career %>%
   kable()
 ```
 
+
+
+name                 H   AB   average
+-----------------  ---  ---  --------
+Jeff Banister        1    1         1
+Doc Bass             1    1         1
+Steve Biras          2    2         1
+C. B. Burns          1    1         1
+Jackie Gallagher     1    1         1
+
 These batters are the one's with the highest batting average, but have only been up once or twice. Not really enough evidence
 
 What about the worst?
 
-```{r}
+
+```r
 career %>%
   arrange(average) %>%
   head(5) %>%
   kable()
 ```
+
+
+
+name                  H   AB   average
+------------------  ---  ---  --------
+Frank Abercrombie     0    4         0
+Lane Adams            0    3         0
+Horace Allen          0    7         0
+Pete Allen            0    4         0
+Walter Alston         0    1         0
 
 Not really the worst batters, they may have just been unlucky... still not enough evidence
 
@@ -87,13 +143,16 @@ Average is not a good estimate here. Let's make a better one.
 ## Step 1: Estimate a prior from all your data
 
 Let's look at batting distribution of all players
-```{r}
+
+```r
 library(ggplot2)
 career %>%
     filter(AB >= 500) %>%
     ggplot(aes(average)) +
     geom_histogram(binwidth = .005)
 ```
+
+![](02_understanding_empirical_bayes_estimation_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 In this case, players with AB < 500 were removed. This will result in a better estimate by removing noisy cases
 
@@ -108,7 +167,8 @@ $$X\sim\mbox{Beta}(\alpha_0,\beta_0)$$
 
 We just need to pick $$\alpha_0$$ and $$\beta_0$$, which we call "hyper-parameters" of our model. Many ways of fitting a probability distribution to data (`optim`, `mle`, `bbmle` etc.)
 
-```{r}
+
+```r
 # just like the graph, we have to filter for the players we actually
 # have a decent estimate of
 career_filtered <- career %>%
@@ -116,20 +176,33 @@ career_filtered <- career %>%
 
 m <- MASS::fitdistr(career_filtered$average, dbeta,
                     start = list(shape1 = 1, shape2 = 10))
+```
 
+```
+## Warning in densfun(x, parm[1], parm[2], ...): NaNs produced
+
+## Warning in densfun(x, parm[1], parm[2], ...): NaNs produced
+
+## Warning in densfun(x, parm[1], parm[2], ...): NaNs produced
+```
+
+```r
 alpha0 <- m$estimate[1]
 beta0 <- m$estimate[2]
 ```
 
 This comes up with $$\alpha_0=r alpha0$$ and $$\beta_0=r beta0$$ (your answer may be slightly different). How well does this fit the data?
 
-```{r}
+
+```r
 ggplot(career_filtered) +
   geom_histogram(aes(average, y = ..density..), binwidth = .005) +
   stat_function(fun = function(x) dbeta(x, alpha0, beta0), color = "red",
                 size = 1) +
   xlab("Batting average")
 ```
+
+![](02_understanding_empirical_bayes_estimation_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 Nice!
 
@@ -149,39 +222,86 @@ $$\frac{4+\alpha_0}{10+\alpha_0+\beta_0}=\frac{4+r round(alpha0, 1)}{10+r round(
 Thus, even though $$\frac{4}{10}>\frac{300}{1000}$$, we would guess that the $$\frac{300}{1000}$$ batter is better than the $$\frac{4}{10}$$ batter!
 
 Performing this calculation for all the batters is simple enough:
-```{r}
+
+```r
 career_eb <- career %>%
     mutate(eb_estimate = (H + alpha0) / (AB + alpha0 + beta0))
 career_eb
+```
+
+```
+## # A tibble: 9,509 x 5
+##    name                  H    AB average eb_estimate
+##    <chr>             <int> <int>   <dbl>       <dbl>
+##  1 Hank Aaron         3771 12364  0.305        0.304
+##  2 Tommie Aaron        216   944  0.229        0.236
+##  3 Andy Abad             2    21  0.0952       0.248
+##  4 John Abadie          11    49  0.224        0.254
+##  5 Ed Abbaticchio      772  3044  0.254        0.254
+##  6 Fred Abbott         107   513  0.209        0.227
+##  7 Jeff Abbott         157   596  0.263        0.262
+##  8 Kurt Abbott         523  2044  0.256        0.256
+##  9 Ody Abbott           13    70  0.186        0.245
+## 10 Frank Abercrombie     0     4  0            0.256
+## # ... with 9,499 more rows
 ```
 
 ## Results
 
 Now we can ask: who are the best batters by this improved estimate?
 
-```{r}
+
+```r
 options(digits = 3)
 career_eb %>%
   arrange(desc(eb_estimate)) %>%
   head(5) %>%
   kable()
+```
+
+
+
+name                       H     AB   average   eb_estimate
+---------------------  -----  -----  --------  ------------
+Rogers Hornsby          2930   8173     0.358         0.355
+Shoeless Joe Jackson    1772   4981     0.356         0.350
+Ed Delahanty            2596   7505     0.346         0.342
+Billy Hamilton          2158   6268     0.344         0.340
+Harry Heilmann          2660   7787     0.342         0.338
+
+```r
 options(digits = 1)
 ```
 Who are the worst batters?
 
-```{r}
+
+```r
 options(digits = 3)
 career_eb %>%
   arrange(eb_estimate) %>%
   head(5) %>%
   kable()
+```
+
+
+
+name                H     AB   average   eb_estimate
+---------------  ----  -----  --------  ------------
+Bill Bergen       516   3028     0.170         0.179
+Ray Oyler         221   1265     0.175         0.191
+John Vukovich      90    559     0.161         0.196
+John Humphries     52    364     0.143         0.196
+George Baker       74    474     0.156         0.196
+
+```r
 options(digits = 1)
 ```
 
 In these cases empirical Bayes didn't pick batters with 1 or 2 at-bats. It found players who batted well, or poorly across a long career.  we can start using these empirical Bayes estimates in downstream analyses and algorithms, and not worry that we're accidentally letting $$0/1$$ or $$1/1$$ cases ruin everything.
 
 Overall, let's see how empirical Bayes changed all of the batting average estimates:
-```{r}
+
+```r
 ggplot(career_eb, aes(average, eb_estimate, color = AB)) +
   geom_hline(yintercept = alpha0 / (alpha0 + beta0), color = "red", lty = 2) +
   geom_point() +
@@ -190,6 +310,8 @@ ggplot(career_eb, aes(average, eb_estimate, color = AB)) +
   xlab("Batting average") +
   ylab("Empirical Bayes batting average")
 ```
+
+![](02_understanding_empirical_bayes_estimation_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 The horizontal dashed red line marks $$y=\frac{\alpha_0}{\alpha_0 + \beta_0}=r sprintf("%.3f", alpha0 / (alpha0 + beta0))$$- that's what we would guess someone's batting average was if we had no evidence at all. Notice that points above that line tend to move down towards it, while points below it move up.
 
 The diagonal red line marks $$x=y$$. Points that lie close to it are the ones that didn't get shrunk at all by empirical Bayes. Notice that they're the ones with the highest number of at-bats and hence, more evidence (the brightest blue): they have enough evidence that we're willing to believe the naive batting average estimate.
@@ -208,7 +330,8 @@ We've made some enormous simplifications in this post.
 
 we assumed all batting averages are drawn from a single distribution. This depends on known factors like the distribution of batting changing over time:
 
-```{r}
+
+```r
 batting_by_decade <- Batting %>%
   filter(AB > 0) %>%
   group_by(playerID, Decade = round(yearID - 5, -1)) %>%
@@ -223,6 +346,8 @@ ggplot(batting_by_decade, aes(factor(Decade), average)) +
   ylab("Batting average")
 ```
 
+![](02_understanding_empirical_bayes_estimation_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
 - Ideally, we'd want to estimate a different Beta prior for each decade
 - Similarly, we could estimate separate priors for each team
 - a separate prior for pitchers, and so on.
@@ -231,9 +356,31 @@ One useful approach to this is Bayesian hierarchical modeling (as used in, for e
 
 Also, as alluded to above, we shouldn't be estimating the distribution of batting averages using only the ones with more than 500 at-bats. Really, we should use all of our data to estimate the distribution, but give more consideration to the players with a higher number of at-bats. This can be done by fitting a beta-binomial distribution. For instance, we can use the dbetabinom.ab function from VGAM, and the mle function:
 
-```{r}
-library(VGAM)
 
+```r
+library(VGAM)
+```
+
+```
+## Loading required package: stats4
+```
+
+```
+## Loading required package: splines
+```
+
+```
+## 
+## Attaching package: 'VGAM'
+```
+
+```
+## The following object is masked from 'package:tidyr':
+## 
+##     fill
+```
+
+```r
 # negative log likelihood of data given alpha; beta
 ll <- function(alpha, beta) {
   -sum(dbetabinom.ab(career$H, career$AB, alpha, beta, log = TRUE))
@@ -241,6 +388,11 @@ ll <- function(alpha, beta) {
 
 m <- mle(ll, start = list(alpha = 1, beta = 10), method = "L-BFGS-B")
 coef(m)
+```
+
+```
+## alpha  beta 
+##    75   224
 ```
 
 We end up getting almost the same prior, which is reassuring!

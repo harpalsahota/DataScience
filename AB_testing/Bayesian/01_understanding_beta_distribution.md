@@ -17,8 +17,34 @@ We expect that the player’s season-long batting average will be most likely ar
 
 ```r
 library(ggplot2)
-library(dplyr)
+```
 
+```
+## Warning: package 'ggplot2' was built under R version 3.3.2
+```
+
+```r
+library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 sim <- data.frame(a = c(81, 82, 81 + 100),
                   b = c(219, 219, 219 + 200)) %>%
     group_by(a, b) %>%
@@ -39,7 +65,7 @@ sim %>% filter(a == 81) %>%
 ## Warning: Removed 500 rows containing missing values (geom_path).
 ```
 
-![](1_understanding_beta_distribution_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+![](01_understanding_beta_distribution_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 
 Why these paramaters I hear you ask: $\frac{\alpha}{\alpha + \beta}  = \frac{81}{81+219} = 0.27$. Mother of god that's the mean!
@@ -62,7 +88,7 @@ sim %>% filter(a < 100) %>%
 ## Warning: Removed 1000 rows containing missing values (geom_path).
 ```
 
-![](1_understanding_beta_distribution_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+![](01_understanding_beta_distribution_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 This hardly moved the line! That's because one hit does not really mean anything!
 
@@ -78,7 +104,7 @@ sim %>% ggplot(aes(x, y, color = Parameters)) + geom_line() +
 ## Warning: Removed 1500 rows containing missing values (geom_path).
 ```
 
-![](1_understanding_beta_distribution_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+![](01_understanding_beta_distribution_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 The curve is now thinner and shifted to the right!
 
