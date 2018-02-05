@@ -106,3 +106,6 @@ Books/Hands-On Machine Learning with Scikit-Learn & Tensorflow/images/
 
 #Pycharm
 .idea/
+
+#Mac Files
+*.DS_Store
