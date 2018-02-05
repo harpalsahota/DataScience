@@ -1,0 +1,8 @@
+base
+knitr
+ggplot2
+dplyr
+tidyr
+Lahman
+bindrcpp
+broom
