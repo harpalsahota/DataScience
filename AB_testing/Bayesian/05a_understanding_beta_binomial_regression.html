@@ -183,8 +183,8 @@ career_eb &lt;- career %&gt;%
   mutate(alpha1 = H + alpha0,
          beta1 = AB - H + beta0) %&gt;%
   arrange(desc(eb_estimate))</code></pre>
-<p>Recall that the eb_estimate column gives us estimates about each player’s batting average, estimated from a combination of each player’s record with the beta prior parameters estimated from everyone (<span class="math display">\[\alpha_0\]</span>, <span class="math display">\[\beta_0\]</span>). For example, a player with only a single at-bat and a single hit (<span class="math display">\[H = 1; AB = 1; H / AB = 1\]</span>) will have an empirical Bayes estimate of</p>
-<p><span class="math display">\[(H + \alpha_0) / (AB + \alpha_0 + \beta_0) = (1 + r round(alpha0, 1)) / (1 + r round(alpha0, 1) + r round(beta0, 1)) = r (1 + alpha0) / (1 + alpha0 + beta0)\]</span></p>
+<p>Recall that the eb_estimate column gives us estimates about each player’s batting average, estimated from a combination of each player’s record with the beta prior parameters estimated from everyone (<span class="math inline">\(\alpha_0\)</span>, <span class="math inline">\(\beta_0\)</span>). For example, a player with only a single at-bat and a single hit (<span class="math inline">\(H = 1; AB = 1; H / AB = 1\)</span>) will have an empirical Bayes estimate of</p>
+<p><span class="math display">\[(H + \alpha_0) / (AB + \alpha_0 + \beta_0) = (1 + 76.5) / (1+76.5+218.6) = 0.262\]</span></p>
 <p>Now, here’s the complication. Let’s compare at-bats (on a log scale) to the raw batting average:</p>
 <pre class="r"><code>career %&gt;%
   filter(AB &gt;= 20) %&gt;%
@@ -220,32 +220,32 @@ median_lt_20</code></pre>
 ##   average
 ##     &lt;dbl&gt;
 ## 1   0.167</code></pre>
-<p>That horizontal red line shows the prior mean that we’re “shrinking” towards (<span class="math display">\[\frac{\alpha_0}{\alpha_0 + \beta_0} = r prior_mu\]</span>). Notice that it is too high for the low-AB players.</p>
+<p>That horizontal red line shows the prior mean that we’re “shrinking” towards (<span class="math inline">\(\frac{\alpha_0}{\alpha_0 + \beta_0} = r prior_mu\)</span>). Notice that it is too high for the low-AB players.</p>
 <p>For example, the median batting average for players with 5-20 at-bats is 0.167 and they get shrunk way towards the overall average! The high-AB crowd basically stays where they are, because each has a lot of evidence.</p>
 <p><em>So since low-AB batters are getting overestimated, and high-AB batters are staying where they are, we’re working with a biased estimate that is systematically overestimating batter ability</em></p>
 </div>
 <div id="accounting-for-ab-in-the-model" class="section level2">
 <h2>Accounting for AB in the model</h2>
-<p>We’ll need to have AB somehow influence our priors, particularly affecting the mean batting average. In particular, we want the typical batting average to be linearly affected by <span class="math display">\[\log(\mbox{AB})\]</span>.</p>
-<p>First we should write out what our current model is, in the form of a generative process, in terms of how each of our variables is generated from particular distributions. Defining <span class="math display">\[p_i\]</span> to be the true probability of hitting for batter <span class="math display">\[i\]</span> (that is, the “true average” we’re trying to estimate), we’re assuming</p>
-<p><span class="math display">\[p_i \sim \mbox{Beta}(\alpha_0, \beta_0)\]</span></p>
-<p><span class="math display">\[H_i \sim \mbox{Binom}(\mbox{AB}_i, p_i)\]</span></p>
-<p>(We’re letting the totals <span class="math display">\[\mbox{AB}_i\]</span> be fixed and known per player). We made up this model in one of the first posts in this series and have been using it since.</p>
-<p>I’ll point out that there’s another way to write the <span class="math display">\[p_i\]</span> calculation, by re-parameterizing the beta distribution. Instead of parameters <span class="math display">\[\alpha_0\]</span> and <span class="math display">\[\beta_0\]</span>, let’s write it in terms of <span class="math display">\[\mu_0\]</span> and <span class="math display">\[\sigma_0\]</span>:</p>
+<p>We’ll need to have AB somehow influence our priors, particularly affecting the mean batting average. In particular, we want the typical batting average to be linearly affected by <span class="math inline">\(\log(\mbox{AB})\)</span>.</p>
+<p>First we should write out what our current model is, in the form of a generative process, in terms of how each of our variables is generated from particular distributions. Defining <span class="math inline">\(p_i\)</span> to be the true probability of hitting for batter <span class="math inline">\(i\)</span> (that is, the “true average” we’re trying to estimate), we’re assuming</p>
+<p><span class="math inline">\(p_i \sim \mbox{Beta}(\alpha_0, \beta_0)\)</span></p>
+<p><span class="math inline">\(H_i \sim \mbox{Binom}(\mbox{AB}_i, p_i)\)</span></p>
+<p>(We’re letting the totals <span class="math inline">\(\mbox{AB}_i\)</span> be fixed and known per player). We made up this model in one of the first posts in this series and have been using it since.</p>
+<p>I’ll point out that there’s another way to write the <span class="math inline">\(p_i\)</span> calculation, by re-parameterizing the beta distribution. Instead of parameters <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\beta_0\)</span>, let’s write it in terms of <span class="math inline">\(\mu_0\)</span> and <span class="math inline">\(\sigma_0\)</span>:</p>
 <p><span class="math display">\[p_i \sim \mbox{Beta}(\mu_0 / \sigma_0, (1 - \mu_0) / \sigma_0)\]</span></p>
-<p>Here, <span class="math display">\[\mu_0\]</span> represents the mean batting average, while <span class="math display">\[\sigma\]</span> represents how spread out the distribution is (note that <span class="math display">\[\sigma = \frac{1}{\alpha+\beta}\]</span>). When <span class="math display">\[\sigma\]</span> is high, the beta distribution is very wide (a less informative prior), and when <span class="math display">\[\sigma\]</span> is low, it’s narrow (a more informative prior). Way back in my first post about the beta distribution, this is basically how I chose parameters: I wanted <span class="math display">\[\mu = .27\]</span>, and then I chose a <span class="math display">\[\sigma\]</span> that would give the desired distribution that mostly lay between .210 and .350, our expected range of batting averages.</p>
-<p>Now that we’ve written our model in terms of <span class="math display">\[\mu\]</span> and <span class="math display">\[\sigma\]</span>, it becomes easier to see how a model could take AB into consideration. We simply define <span class="math display">\[\mu\]</span> so that it includes <span class="math display">\[\log(\mbox{AB})\]</span> as a linear term[^linear]:</p>
+<p>Here, <span class="math inline">\(\mu_0\)</span> represents the mean batting average, while <span class="math inline">\(\sigma\)</span> represents how spread out the distribution is (note that <span class="math inline">\(\sigma = \frac{1}{\alpha+\beta}\)</span>). When <span class="math inline">\(\sigma\)</span> is high, the beta distribution is very wide (a less informative prior), and when <span class="math inline">\(\sigma\)</span> is low, it’s narrow (a more informative prior). Way back in my first post about the beta distribution, this is basically how I chose parameters: I wanted <span class="math inline">\(\mu = .27\)</span>, and then I chose a <span class="math inline">\(\sigma\)</span> that would give the desired distribution that mostly lay between .210 and .350, our expected range of batting averages.</p>
+<p>Now that we’ve written our model in terms of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>, it becomes easier to see how a model could take AB into consideration. We simply define <span class="math inline">\(\mu\)</span> so that it includes <span class="math inline">\(\log(\mbox{AB})\)</span> as a linear term:</p>
 <p><span class="math display">\[\mu_i = \mu_0 + \mu_{\mbox{AB}} \cdot \log(\mbox{AB})\]</span></p>
 <p><span class="math display">\[\alpha_{0,i} = \mu_i / \sigma_0\]</span></p>
 <p><span class="math display">\[\beta_{0,i} = (1 - \mu_i) / \sigma_0\]</span></p>
-<p>Then we define the batting average <span class="math display">\[p_i\]</span> and the observed <span class="math display">\[H_i\]</span> just like before:</p>
+<p>Then we define the batting average <span class="math inline">\(p_i\)</span> and the observed <span class="math inline">\(H_i\)</span> just like before:</p>
 <p><span class="math display">\[p_i \sim \mbox{Beta}(\alpha_{0,i}, \beta_{0,i})\]</span></p>
 <p><span class="math display">\[H_i \sim \mbox{Binom}(\mbox{AB}_i, p_i)\]</span></p>
 <p>This particular model is called beta-binomial regression. We already had each player represented with a binomial whose parameter was drawn from a beta, but now we’re allowing the expected value of the beta to be influenced.</p>
 </div>
 <div id="step-1-fit-the-model-across-all-players" class="section level2">
 <h2>Step 1: Fit the model across all players</h2>
-<p>Going back to the basics of empirical Bayes, our first step is to fit these prior parameters: <span class="math display">\[\mu_0\]</span>, <span class="math display">\[\mu_{\mbox{AB}}\]</span>, <span class="math display">\[\sigma_0\]</span>. When doing so, it’s ok to momentarily “forget” we’re Bayesians- we picked our <span class="math display">\[\alpha_0\]</span> and <span class="math display">\[\beta_0\]</span> using maximum likelihood, so it’s OK to fit these using a maximum likelihood approach as well. You can use the gamlss package for fitting beta-binomial regression using maximum likelihood.</p>
+<p>Going back to the basics of empirical Bayes, our first step is to fit these prior parameters: <span class="math inline">\(\mu_0\)</span>, <span class="math inline">\(\mu_{\mbox{AB}}\)</span>, <span class="math inline">\(\sigma_0\)</span>. When doing so, it’s ok to momentarily “forget” we’re Bayesians- we picked our <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\beta_0\)</span> using maximum likelihood, so it’s OK to fit these using a maximum likelihood approach as well. You can use the gamlss package for fitting beta-binomial regression using maximum likelihood.</p>
 <pre class="r"><code>library(gamlss)</code></pre>
 <pre><code>## Loading required package: splines</code></pre>
 <pre><code>## Loading required package: gamlss.data</code></pre>
@@ -283,7 +283,7 @@ td</code></pre>
 ## 1        mu (Intercept)  0.14311929 0.0015586557   91.82226       0
 ## 2        mu     log(AB)  0.01522737 0.0002127345   71.57921       0
 ## 3     sigma (Intercept) -6.29815185 0.0228342458 -275.82044       0</code></pre>
-<p>This gives us our three parameters: <span class="math display">\[\mu_0 = 0.143\]</span>, <span class="math display">\[\mu_\mbox{AB} = 0.015\]</span>, and (since sigma has a log-link) <span class="math display">\[\sigma_0 = \exp(-6.2982) = exp(0.00184)\]</span>.</p>
+<p>This gives us our three parameters: <span class="math inline">\(\mu_0 = 0.143\)</span>, <span class="math inline">\(\mu_\mbox{AB} = 0.015\)</span>, and (since sigma has a log-link) <span class="math inline">\(\sigma_0 = \exp(-6.2982) = exp(0.00184)\)</span>.</p>
 <p>This means that our new prior beta distribution for a player depends on the value of AB. For example, here are our prior distributions for several values:</p>
 <pre class="r"><code>mu_0 &lt;- td$estimate[1]
 mu_AB &lt;- td$estimate[2]
@@ -302,8 +302,8 @@ crossing(x = seq(0.08, .35, .001), AB = c(1, 10, 100, 1000, 10000)) %&gt;%
 </div>
 <div id="step-2-estimate-each-players-average-using-this-prior" class="section level2">
 <h2>Step 2: Estimate each player’s average using this prior</h2>
-<p>Now that we’ve fit our overall model, we repeat our second step of the empirical Bayes method. Instead of using a single <span class="math display">\[\alpha_0\]</span> and <span class="math display">\[\beta_0\]</span> values as the prior, we choose the prior for each player based on their AB. We then update using their <span class="math display">\[H\]</span> and <span class="math display">\[AB\]</span> just like before.</p>
-<p>Here, all we need to calculate are the <code>mu</code> (that is, <span class="math display">\[\mu = \mu_0 + \mu_{\log(\mbox{AB})}\]</span>) and <code>sigma</code> (<span class="math display">\[\sigma\]</span>) parameters for each person. (Here, <code>sigma</code> will be the same for everyone, but that may not be true in more complex models). This can be done using the <code>fitted</code> method on the gamlss object:</p>
+<p>Now that we’ve fit our overall model, we repeat our second step of the empirical Bayes method. Instead of using a single <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\beta_0\)</span> values as the prior, we choose the prior for each player based on their AB. We then update using their <span class="math inline">\(H\)</span> and <span class="math inline">\(AB\)</span> just like before.</p>
+<p>Here, all we need to calculate are the <code>mu</code> (that is, <span class="math inline">\(\mu = \mu_0 + \mu_{\log(\mbox{AB})}\)</span>) and <code>sigma</code> (<span class="math inline">\(\sigma\)</span>) parameters for each person. (Here, <code>sigma</code> will be the same for everyone, but that may not be true in more complex models). This can be done using the <code>fitted</code> method on the gamlss object:</p>
 <pre class="r"><code>mu &lt;- fitted(fit, parameter = &quot;mu&quot;)
 sigma &lt;- fitted(fit, parameter = &quot;sigma&quot;)
 
@@ -313,7 +313,7 @@ head(mu)</code></pre>
 <pre class="r"><code>head(sigma)</code></pre>
 <pre><code>##           1           2           3           4           5           6 
 ## 0.001839702 0.001839702 0.001839702 0.001839702 0.001839702 0.001839702</code></pre>
-<p>Now we can calculate <span class="math display">\[\alpha_0\]</span> and <span class="math display">\[\beta_0\]</span> parameters for each player, according to <span class="math display">\[\alpha_{0,i}=\mu_i / \sigma_0\]</span> and <span class="math display">\[\beta_{0,i}=(1-\mu_i) / \sigma_0\]</span>. From that, we can update based on <span class="math display">\[H\]</span> and <span class="math display">\[AB\]</span> to calculate new <span class="math display">\[\alpha_{1,i}\]</span> and <span class="math display">\[\beta_{1,i}\]</span> for each player.</p>
+<p>Now we can calculate <span class="math inline">\(\alpha_0\)</span> and <span class="math inline">\(\beta_0\)</span> parameters for each player, according to <span class="math inline">\(\alpha_{0,i}=\mu_i / \sigma_0\)</span> and <span class="math inline">\(\beta_{0,i}=(1-\mu_i) / \sigma_0\)</span>. From that, we can update based on <span class="math inline">\(H\)</span> and <span class="math inline">\(AB\)</span> to calculate new <span class="math inline">\(\alpha_{1,i}\)</span> and <span class="math inline">\(\beta_{1,i}\)</span> for each player.</p>
 <pre class="r"><code>career_eb_wAB &lt;- career_eb %&gt;%
   dplyr::select(name, H, AB, original_eb = eb_estimate) %&gt;%
   mutate(mu = mu,
