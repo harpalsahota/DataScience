@@ -27,3 +27,7 @@
 #### NLP
 
 - https://github.com/niderhoff/nlp-datasets/blob/master/README.md
+
+#### Recommendation Systems
+
+- https://grouplens.org/datasets/ (data sets in right column)
