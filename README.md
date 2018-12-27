@@ -6,7 +6,7 @@ Have a look at my personal portfolio at: https://www.drdatascience.co.uk
 
 ## Compatibility
 
-All python notebooks are created with `Python 3.6` unless otherwise stated.
+All python notebooks are created with `Python 3.6 (32-bit)` unless otherwise stated.
 
 ## Requirements
 
