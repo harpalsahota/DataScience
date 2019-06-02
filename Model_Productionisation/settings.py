@@ -1,0 +1,1 @@
+MODEL_NAME = 'rf_classifier.pkl'
