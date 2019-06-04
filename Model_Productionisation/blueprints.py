@@ -26,12 +26,14 @@ class BaseBlueprint(Blueprint):
         self.after_request(self._log_post_request)
 
     def _log_before_request(self, *args, **kwargs):
-        print(args, kwargs)
-        logger.info(f'{request.url_rule}')
+        logger.info(f'Request for endpoint: {request.full_path}')
+        logger.info(f'With args: {request.args}')
 
-    def _log_post_request(self, *args, **kwargs):
-        print(args, kwargs)
-        return args[0]
+
+    def _log_post_request(self, response):
+        logger.info(f'Response status: {response.status}')
+        logger.info(f'Response json: {response.json}')
+        return response
 
 
 price_prediction_blueprint = BaseBlueprint('price_prediction_blueprint', __name__)
