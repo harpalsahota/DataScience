@@ -4,8 +4,6 @@ from flask import (
     jsonify,
 )
 from flask.views import MethodView
-
-
 import joblib
 
 from common import schemas
