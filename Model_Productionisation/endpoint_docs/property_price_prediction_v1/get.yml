@@ -1,0 +1,29 @@
+tags:
+- Price Prediction V1
+produces:
+- application/json
+summary: Return the predicted price of a property
+parameters:
+- in: query
+  name: is_house
+  description: Binary value indicating if property is a house
+  required: true
+  type: number
+- in: query
+  name: has_garden
+  description: Binary value indicating if property has a garden
+  required: true
+  type: number
+- in: query
+  name: n_bedrooms
+  description: Number indicating how many bedrooms the property has
+  required: true
+  type: number
+responses:
+  200:
+    description: Successfully calculated price
+    schema:
+      type: object
+      properties:
+
+      example: { }
