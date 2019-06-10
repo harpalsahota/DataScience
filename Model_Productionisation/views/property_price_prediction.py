@@ -3,7 +3,7 @@ from flask import (
     request,
     jsonify,
 )
-from flask.views import MethodView
+from flasgger import SwaggerView
 import joblib
 
 from common import schemas
@@ -12,13 +12,22 @@ import settings
 
 MODEL = joblib.load(f'./models/{settings.MODEL_NAME}')
 
-class PropertyPricePrediction(MethodView):
+class PropertyPricePrediction(SwaggerView):
 
     methods = ['GET']
 
     def get(self):
-        features = request.args.to_dict()
-        price_prediction = schemas.PricePredictionFeaturesSchema().load(features)
-        print(price_prediction)
-        predicted_price = MODEL.predict([[1, 0, 3]]).tolist()
-        return jsonify({'predicted_price': predicted_price})
+        try:
+            features = request.args.to_dict()
+            price_prediction = schemas.PricePredictionFeaturesSchema().load(features)
+            predicted_price = MODEL.predict([[
+                price_prediction.is_house,
+                price_prediction.has_garden,
+                price_prediction.n_bedrooms,
+            ]]).tolist()
+            return jsonify({
+                'data': {'predicted_price': predicted_price}
+            })
+        except Exception as error:
+            return jsonify({'error': str(error)}), 400
+
