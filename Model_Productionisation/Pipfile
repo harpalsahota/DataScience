@@ -13,11 +13,11 @@ flask = "*"
 flask-cors = "*"
 sklearn = "*"
 gunicorn = "*"
-marshmallow = "*"
+marshmallow = "==3.0.0rc3"
 python-dotenv = "*"
 pyaml = "*"
 flasgger = "*"
-apispec = "*"
+apispec = "==0.39.0"
 
 [requires]
 python_version = "3.7"
