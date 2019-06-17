@@ -19,6 +19,9 @@ api.register_blueprint(
     price_prediction_blueprint,
     url_prefix='/api'
 )
+api.config['SWAGGER'] = {
+    'doc_dir': './endpoint_docs'
+}
 swag = Swagger(
     api,
     parse=False,  # If true forces the incoming data to be validated
