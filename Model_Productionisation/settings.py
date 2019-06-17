@@ -10,7 +10,7 @@ import yaml
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
-MODEL_NAME = 'rf_classifier.pkl'
+MODEL_NAME = None
 
 # Load custom settings from the YAML file specified by APP_SETTINGS_YAML
 custom_settings_filepath = os.environ.get('APP_SETTINGS_YAML')
