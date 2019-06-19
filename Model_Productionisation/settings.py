@@ -10,6 +10,7 @@ import yaml
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
+# Application Variables
 MODEL_NAME = None
 
 # Load custom settings from the YAML file specified by APP_SETTINGS_YAML
