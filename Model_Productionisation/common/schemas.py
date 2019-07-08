@@ -10,9 +10,9 @@ from common.data_models import PricePredictionFeaturesModel
 
 
 class PricePredictionFeaturesSchema(Schema):
-    is_house = fields.Integer()
-    has_garden = fields.Integer()
-    n_bedrooms = fields.Integer()
+    is_house = fields.Integer(required=True)
+    has_garden = fields.Integer(required=True)
+    n_bedrooms = fields.Integer(required=True)
 
     @validates('is_house')
     def validate_is_house(self, value):
