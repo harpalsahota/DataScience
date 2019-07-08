@@ -18,6 +18,7 @@ python-dotenv = "*"
 pyaml = "*"
 flasgger = "*"
 apispec = "==0.39.0"
+waitress = "*"
 
 [requires]
 python_version = "3.7"
