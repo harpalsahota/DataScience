@@ -12,8 +12,6 @@ load_dotenv(dotenv_path)
 
 # Application Variables
 MODEL_NAME = None
-FLASK_IP = None
-FLASK_PORT = None
 
 # Load custom settings from the YAML file specified by APP_SETTINGS_YAML
 custom_settings_filepath = os.environ.get('APP_SETTINGS_YAML')
