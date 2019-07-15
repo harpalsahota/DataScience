@@ -4,7 +4,6 @@ from flasgger import Swagger
 
 from blueprints import price_prediction_blueprint
 
-import settings
 
 api = Flask(__name__)
 
