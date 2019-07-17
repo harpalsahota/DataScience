@@ -25,5 +25,10 @@ responses:
     schema:
       type: object
       properties:
-
-      example: { }
+        data:
+          type: object
+          properties:
+            predicted_price:
+              type: number
+              description: Estimated price of property
+      example: {"data": {"predicted_price": [300000]}}
