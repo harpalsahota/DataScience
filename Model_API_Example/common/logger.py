@@ -1,3 +1,5 @@
+""" Logging for the API """
+
 import logging
 
 

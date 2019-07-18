@@ -1,3 +1,4 @@
+""" Module containing Data models """
 
 from dataclasses import dataclass
 
