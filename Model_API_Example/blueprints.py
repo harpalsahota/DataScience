@@ -1,5 +1,5 @@
 """
-Blueprints for the models
+Blueprints for the views
 """
 from flask import (
     request,

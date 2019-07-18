@@ -1,3 +1,4 @@
+""" Views for property price prediction """
 
 from flask import (
     request,
