@@ -10,5 +10,5 @@ All python notebooks are created with `Python 3.6 (32-bit)` unless otherwise sta
 
 ## Requirements
 
-The Python requirements for this project can be found in `requirements.txt`. Some projects
-may have their own requirements, this will be clearly stated at the top of the notebook.
+The Python requirements can be found in Pipfiles at the sub-directory level. If no Pipfile is present assume only
+vanilla Python is needed along with a Python version >= 3.6
