@@ -19,6 +19,7 @@ pyaml = "*"
 flasgger = "*"
 apispec = "==0.39.0"
 waitress = "*"
+pip = "==18.0.0"
 
 [requires]
 python_version = "3.7"
