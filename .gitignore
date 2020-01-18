@@ -115,3 +115,7 @@ Books/Hands-On Machine Learning with Scikit-Learn & Tensorflow/images/
 /data
 */data/*
 *.csv
+*data
+
+# Model folders
+*models
