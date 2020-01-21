@@ -119,3 +119,6 @@ Books/Hands-On Machine Learning with Scikit-Learn & Tensorflow/images/
 
 # Model folders
 *models
+
+# poetry files
+*poetry.lock
