@@ -5,16 +5,19 @@ description = ""
 authors = ["Harpal Sahota"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 flask = "^1.1.1"
 numpy = "^1.18.1"
 flask-material = "^0.1.1"
+jupyter = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
-keras = "^2.3.1"
 pandas = "^0.25.3"
 seaborn = "^0.10.0"
 requests = "^2.22.0"
+sklearn = "^0.0"
+keras = "^2.3.1"
+tensorflow = "^2.1.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
