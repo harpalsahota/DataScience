@@ -1,3 +1,5 @@
+import json
+
 from flask import (
     Flask,
     jsonify,
@@ -6,6 +8,10 @@ from flask import (
 )
 from flask_material import Material
 
+with open('./data/games_none.json', 'r') as in_json:
+    GAME_AUTOCOMPLETE = json.load(in_json)
+with open('./data/games_with_tags_double_filter.json', 'r') as in_json:
+    GAME_TAGS = json.load(in_json)
 
 app = Flask(__name__)
 Material(app)
@@ -13,16 +19,14 @@ Material(app)
 
 @app.route('/')
 def index():
-    games = {'BattleField': None, 'Age of Empires': None, 'game3': None}
-    return render_template('index.html', games=games)
+    return render_template('index.html', games_autocomplete=GAME_AUTOCOMPLETE)
 
 
 @app.route('/recommendation', methods=['POST'])
 def selected_game():
     if request.method == 'POST':
         data = request.json
-        print(data)
-        return jsonify(['game x', 'game y', 'game x'])
+        return jsonify(GAME_TAGS[data['game']])
 
 
 if __name__ == '__main__':
