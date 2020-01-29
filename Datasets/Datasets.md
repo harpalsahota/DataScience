@@ -11,6 +11,7 @@
 - http://dataportals.org/
 - https://opendatamonitor.eu/
 - https://www.quandl.com/
+- https://blog.google/products/search/discovering-millions-datasets-web
 
 #### Other sites that can offer datasets:
 
