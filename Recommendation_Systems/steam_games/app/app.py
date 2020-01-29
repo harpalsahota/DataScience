@@ -7,11 +7,15 @@ from flask import (
     request,
 )
 from flask_material import Material
+import numpy as np
+
 
 with open('./data/games_none.json', 'r') as in_json:
     GAME_AUTOCOMPLETE = json.load(in_json)
 with open('./data/games_with_tags_double_filter.json', 'r') as in_json:
     GAME_TAGS = json.load(in_json)
+GAME_WEIGHTS = np.load('./data/game_weights_200.pkl')
+TAG_WEIGHTS = np.load('./data/tag_weights_200.pkl')
 
 app = Flask(__name__)
 Material(app)
