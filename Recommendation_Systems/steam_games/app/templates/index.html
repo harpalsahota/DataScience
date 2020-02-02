@@ -5,6 +5,7 @@
 {% block styles %}
 {{super()}}
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 {% endblock %}
 {% block scripts %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -17,12 +18,16 @@
   function updateCollection(data){
     var el = document.getElementById('recGames');
     el.classList.remove('hide');
-    var container = $('#recGames');
-    container.empty();
-    data.forEach(function(game){
-      container.append(
-      '<li class="collection-item"><div>'+game+'<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>'
-      )
+    var tbody = el.children[1];
+    tbody.innerHTML = "";
+    data['related'].forEach(function(game){
+      tbody.innerHTML += '<tr><td>'+game[0]+'</td><td>'+game[1]+'</td><td></td>'
+    });
+    var tagEl = document.getElementById('tags');
+    tagEl.innerHTML = "";
+    data['tags'].forEach(function(tag){
+        var tagHTML = tag.replace(/\s/g, '');
+        tagEl.innerHTML += '<a class="waves-effect waves-light btn-small" style="margin-bottom: 5px; margin-right: 5px;" id="'+tag+'tag" onclick="removeTag(\''+tag+'\')">'+tag+'</a>'
     });
   }
 
@@ -35,11 +40,16 @@
       data: JSON.stringify({'game':game}),
       })
       .done(function(result){
-          console.log(result);
           updateCollection(result);
       })
   }
-  console.log(gamesAutocomplete);
+
+  function removeTag(tag){
+    console.log(tag);
+    var el = document.getElementById(tag+'tag');
+    el.classList.add('disabled');
+  }
+
   const ac = document.querySelector('.autocomplete');
   var instance = M.Autocomplete.init(ac, {
     minLength: 3,
@@ -73,22 +83,24 @@
     </div>
   </div>
   {{ enddiv() }}
-
   <div class="container">
-<!--    <div class="row">-->
-<!--      <div class="col s12 m6">-->
-        <ul class="collection with-header hide" id="recGames">
-<!--        <li class="collection-header"><h4>First Names</h4></li>-->
-<!--        <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>-->
-<!--        <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>-->
-<!--        <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>-->
-
-<!--        {% for game in games2 %}-->
-<!--          <li class="collection-item"><div>{{game}}<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>-->
-<!--        {% endfor %}-->
-      </ul>
-<!--      </div>-->
-<!--    </div>-->
+    <table class="highlight hide" id="recGames">
+      <thead>
+        <tr>
+          <th>Game</th>
+          <th>Similarity</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <h4>Modify Recommendations</h4>
+    <h5>Tags</h5>
+    <div class="row">
+      <div id="tags">
+      </div>
+    </div>
   </div>
 
 
