@@ -12,17 +12,14 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script>
     var gamesAutocomplete = JSON.parse('{{games_autocomplete | tojson }}')
+    var allTags = JSON.parse('{{all_tags | tojson }}')
   </script>
   <script>
 
+  var selectedGame = null;
+
   function updateCollection(data){
-    var el = document.getElementById('recGames');
-    el.classList.remove('hide');
-    var tbody = el.children[1];
-    tbody.innerHTML = "";
-    data['related'].forEach(function(game){
-      tbody.innerHTML += '<tr><td>'+game[0]+'</td><td>'+game[1]+'</td><td></td>'
-    });
+    updateRelated(data);
     var tagEl = document.getElementById('tags');
     tagEl.innerHTML = "";
     data['tags'].forEach(function(tag){
@@ -31,8 +28,20 @@
     });
   }
 
-  function selectedGame(game){
+  function updateRelated(data){
+    var el = document.getElementById('recGames');
+    el.classList.remove('hide');
+    var tbody = el.children[1];
+    tbody.innerHTML = "";
+    data['related'].forEach(function(game){
+      tbody.innerHTML += '<tr><td>'+game[0]+'</td><td>'+game[1]+'</td><td></td>'
+    });
+  }
+
+  function getRecommendations(game){
+    selectedGame = game
     console.log(game);
+    console.log(selectedGame);
     $.ajax({
       url: '/recommendation',
       type: 'POST',
@@ -48,13 +57,24 @@
     console.log(tag);
     var el = document.getElementById(tag+'tag');
     el.classList.add('disabled');
+
+    $.ajax({
+      url: '/modify-embedding',
+      type: 'POST',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify({'game':selectedGame, 'tag': tag, 'modification': 'subtraction'}),
+      })
+      .done(function(result){
+          updateRelated(result);
+      })
+
   }
 
   const ac = document.querySelector('.autocomplete');
   var instance = M.Autocomplete.init(ac, {
     minLength: 3,
     data: gamesAutocomplete,
-    onAutocomplete: selectedGame
+    onAutocomplete: getRecommendations
   })
 
   </script>
@@ -100,8 +120,53 @@
     <div class="row">
       <div id="tags">
       </div>
+      <table class="highlight" id="tagTable">
+        <tbody>
+        {% for i in range(0, all_tags|length, 5) %}
+        <tr>
+          <td>
+            <label>
+              <input type="checkbox" class="filled-in" id="{{all_tags[i]}}CheckboxTag"/>
+              <span>{{ all_tags[i] }}</span>
+            </label>
+          </td>
+          <td>
+            <label>
+              <input type="checkbox" class="filled-in" id="{{all_tags[i+1]}}CheckboxTag"/>
+              <span>{{ all_tags[i+1] }}</span>
+            </label>
+          </td>
+          <td>
+            <label>
+              <input type="checkbox" class="filled-in" id="{{all_tags[i+2]}}CheckboxTag"/>
+              <span>{{ all_tags[i+2] }}</span>
+            </label>
+          </td>
+          {% if all_tags[i+3] %}
+            <td>
+              <label>
+                <input type="checkbox" class="filled-in" id="{{all_tags[i+3]}}CheckboxTag"/>
+                <span>{{ all_tags[i+3] }}</span>
+              </label>
+            </td>
+          {% endif %}
+          {% if all_tags[i+4] %}
+            <td>
+              <label>
+                <input type="checkbox" class="filled-in" id="{{all_tags[i+4]}}CheckboxTag"/>
+                <span>{{ all_tags[i+4] }}</span>
+              </label>
+            </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
+
+
+
 
 
 {% endblock %}
