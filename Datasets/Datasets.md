@@ -1,10 +1,12 @@
 # Datasets
 
-#### A list of dataset repositories
+#### Dataset Repositories
 
 - UCI Machine Learning Repository (http://archive.ics.uci.edu/ml/index.php)
 - Kaggle (https://www.kaggle.com/datasets)
 - Amazon (https://aws.amazon.com/fr/public-datasets/)
+- Google Dataset Search (https://datasetsearch.research.google.com/)
+- Awesome Public Datasets (https://github.com/awesomedata/awesome-public-datasets)
 
 #### Portals that list open datasets:
 
