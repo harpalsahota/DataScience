@@ -54,7 +54,11 @@ def selected_game():
         embedding = GAME_WEIGHTS[GAME_INDEX[data['game']]]
         related = find_closest(embedding)
         tags = GAME_TAGS[data['game']]
-        return jsonify({'related': related, 'tags': tags, 'embedding': embedding.tolist()})
+        return jsonify({
+            'related': remove_self(data['game'], related),
+            'tags': tags,
+            'embedding': embedding.tolist()
+        })
 
 
 @app.route('/modify-embedding', methods=['POST'])
@@ -64,14 +68,13 @@ def modify_embedding():
         if data['modification'] == 'addition':
             related, embedding = add_tag(data['tag'], data['game'], data['embedding'])
             return jsonify({
-                'related': related,
+                'related': remove_self(data['game'], related),
                 'embedding': embedding.tolist()
             })
         else:
             related, embedding = subtract_tag(data['tag'], data['game'], data['embedding'])
-            remove_self(data['game'], related)
             return jsonify({
-                'related': related,
+                'related': remove_self(data['game'], related),
                 'embedding': embedding.tolist()
             })
 
@@ -83,13 +86,13 @@ def remove_self(game, related):
     :param related:
     :return:
     """
-    return [i for i in related if i[0] != game]
+    return [i for i in related if i[0] != game][:10]
 
 
 def find_closest(game_embedding: np.array):
     dists = np.dot(GAME_WEIGHTS, game_embedding)
     sorted_dists = np.argsort(dists)
-    closest = sorted_dists[-6:-1]
+    closest = sorted_dists[-11:]
     return [(INDEX_GAME[i], f'{dists[i]:.{2}}') for i in reversed(closest)]
 
 
