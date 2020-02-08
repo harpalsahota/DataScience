@@ -16,22 +16,29 @@
   </script>
   <script>
 
-  var selectedGame = null;
+  let selectedGame = null;
+  let embedding = null;
+
+  function clearCheckboxTags() {
+      const _ = [].slice.call(document.getElementsByClassName('filled-in')).map(function(e) { e.removeAttribute('checked') })
+  }
 
   function updateCollection(data){
     updateRelated(data);
+    clearCheckboxTags();
     var tagEl = document.getElementById('tags');
     tagEl.innerHTML = "";
     data['tags'].forEach(function(tag){
         var tagHTML = tag.replace(/\s/g, '');
         tagEl.innerHTML += '<a class="waves-effect waves-light btn-small" style="margin-bottom: 5px; margin-right: 5px;" id="'+tag+'tag" onclick="removeTag(\''+tag+'\')">'+tag+'</a>'
+        document.getElementById(tag+'CheckboxTag').setAttribute('checked', 'checked')
     });
   }
 
   function updateRelated(data){
-    var el = document.getElementById('recGames');
+    const el = document.getElementById('recGames');
     el.classList.remove('hide');
-    var tbody = el.children[1];
+    const tbody = el.children[1];
     tbody.innerHTML = "";
     data['related'].forEach(function(game){
       tbody.innerHTML += '<tr><td>'+game[0]+'</td><td>'+game[1]+'</td><td></td>'
@@ -39,9 +46,7 @@
   }
 
   function getRecommendations(game){
-    selectedGame = game
-    console.log(game);
-    console.log(selectedGame);
+    selectedGame = game;
     $.ajax({
       url: '/recommendation',
       type: 'POST',
@@ -50,24 +55,50 @@
       })
       .done(function(result){
           updateCollection(result);
+          embedding = result['embedding'];
       })
   }
 
-  function removeTag(tag){
-    console.log(tag);
-    var el = document.getElementById(tag+'tag');
-    el.classList.add('disabled');
+  function updateRecommendation(tag, modification) {
 
     $.ajax({
       url: '/modify-embedding',
       type: 'POST',
       contentType: 'application/json; charset=utf-8',
-      data: JSON.stringify({'game':selectedGame, 'tag': tag, 'modification': 'subtraction'}),
-      })
-      .done(function(result){
-          updateRelated(result);
-      })
+      data: JSON.stringify({
+        'game':selectedGame,
+        'tag': tag,
+        'modification': modification,
+        'embedding': embedding,
+      }),
+    })
+    .done(function(result){
+      updateRelated(result);
+      embedding = result['embedding'];
+    })
 
+  }
+
+  function removeTag(tag){
+    updateTag(tag);
+    document.getElementById(tag+'CheckboxTag').removeAttribute('checked');
+    var el = document.getElementById(tag+'tag');
+    el.classList.add('disabled');
+  }
+
+  function updateTag(tag) {
+    const el = document.getElementById(tag+'CheckboxTag');
+    if (el.hasAttribute('checked')) {
+      const tagButton = document.getElementById(tag+'tag');
+      document.getElementById(tag+'CheckboxTag').removeAttribute('checked');
+      if (tagButton) {
+        tagButton.classList.add('disabled');
+      }
+      updateRecommendation(tag, 'subtraction')
+    } else {
+      document.getElementById(tag+'CheckboxTag').setAttribute('checked', 'checked');
+      updateRecommendation(tag, 'addition')
+    }
   }
 
   const ac = document.querySelector('.autocomplete');
@@ -75,7 +106,9 @@
     minLength: 3,
     data: gamesAutocomplete,
     onAutocomplete: getRecommendations
-  })
+  });
+
+  clearCheckboxTags();
 
   </script>
 {{super()}}
@@ -126,34 +159,34 @@
         <tr>
           <td>
             <label>
-              <input type="checkbox" class="filled-in" id="{{all_tags[i]}}CheckboxTag"/>
+              <input type="checkbox" class="filled-in" id="{{all_tags[i]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i]}}')"/>
               <span>{{ all_tags[i] }}</span>
             </label>
           </td>
           <td>
             <label>
-              <input type="checkbox" class="filled-in" id="{{all_tags[i+1]}}CheckboxTag"/>
+              <input type="checkbox" class="filled-in" id="{{all_tags[i+1]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+1]}}')"/>
               <span>{{ all_tags[i+1] }}</span>
             </label>
           </td>
           <td>
             <label>
-              <input type="checkbox" class="filled-in" id="{{all_tags[i+2]}}CheckboxTag"/>
+              <input type="checkbox" class="filled-in" id="{{all_tags[i+2]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+2]}}')"/>
               <span>{{ all_tags[i+2] }}</span>
             </label>
           </td>
           {% if all_tags[i+3] %}
             <td>
               <label>
-                <input type="checkbox" class="filled-in" id="{{all_tags[i+3]}}CheckboxTag"/>
+                <input type="checkbox" class="filled-in" id="{{all_tags[i+3]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+3]}}')"/>
                 <span>{{ all_tags[i+3] }}</span>
               </label>
             </td>
           {% endif %}
           {% if all_tags[i+4] %}
             <td>
-              <label>
-                <input type="checkbox" class="filled-in" id="{{all_tags[i+4]}}CheckboxTag"/>
+              <label onclick="updateTag('{{all_tags[i+4]}}')">
+                <input type="checkbox" class="filled-in" id="{{all_tags[i+4]}}CheckboxTag" checked="checked"/>
                 <span>{{ all_tags[i+4] }}</span>
               </label>
             </td>
