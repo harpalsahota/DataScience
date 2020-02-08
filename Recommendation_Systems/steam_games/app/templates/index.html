@@ -26,22 +26,21 @@
   function updateCollection(data){
     updateRelated(data);
     clearCheckboxTags();
-    var tagEl = document.getElementById('tags');
+    const tagEl = document.getElementById('tags');
     tagEl.innerHTML = "";
     data['tags'].forEach(function(tag){
-        var tagHTML = tag.replace(/\s/g, '');
-        tagEl.innerHTML += '<a class="waves-effect waves-light btn-small" style="margin-bottom: 5px; margin-right: 5px;" id="'+tag+'tag" onclick="removeTag(\''+tag+'\')">'+tag+'</a>'
-        document.getElementById(tag+'CheckboxTag').setAttribute('checked', 'checked')
+      tagEl.innerHTML += '<a class="waves-effect waves-light btn-small" style="margin-bottom: 5px; margin-right: 5px;" id="'+tag+'tag" onclick="removeTag(\''+tag+'\')">'+tag+'</a>'
+      document.getElementById(tag+'CheckboxTag').setAttribute('checked', 'checked')
     });
   }
 
   function updateRelated(data){
-    const el = document.getElementById('recGames');
-    el.classList.remove('hide');
-    const tbody = el.children[1];
+    document.getElementById('recGamesContainer').classList.remove('hide');
+    const tableEl = document.getElementById('recGames');
+    const tbody = tableEl.children[1];
     tbody.innerHTML = "";
     data['related'].forEach(function(game){
-      tbody.innerHTML += '<tr><td>'+game[0]+'</td><td>'+game[1]+'</td><td></td>'
+      tbody.innerHTML += '<tr><td>'+game[0]+'</td><td>'+game[1]+'</td>'
     });
   }
 
@@ -137,17 +136,19 @@
   </div>
   {{ enddiv() }}
   <div class="container">
-    <table class="highlight hide" id="recGames">
-      <thead>
+    <div class="row hide" id="recGamesContainer">
+      <h3>Similar Games</h3>
+      <table class="highlight" id="recGames">
+        <thead>
         <tr>
           <th>Game</th>
           <th>Similarity</th>
-          <th></th>
         </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
     <h4>Modify Recommendations</h4>
     <h5>Tags</h5>
     <div class="row">
