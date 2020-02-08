@@ -1,4 +1,5 @@
 import json
+from typing import List
 
 from flask import (
     Flask,
@@ -10,10 +11,11 @@ from flask_material import Material
 import numpy as np
 
 
-with open('./data/games_none.json', 'r') as in_json:
-    GAME_AUTOCOMPLETE = json.load(in_json)
-with open('./data/games_with_tags_double_filter.json', 'r') as in_json:
-    GAME_TAGS = json.load(in_json)
+with open('./data/games_none.json', 'r') as none_json,\
+    open('./data/games_with_tags_double_filter.json', 'r') as data_json:
+    GAME_AUTOCOMPLETE = json.load(none_json)
+    GAME_TAGS = json.load(data_json)
+
 GAME_INDEX = {game: idx for idx, game in enumerate(GAME_TAGS)}
 INDEX_GAME = {idx: game for game, idx in GAME_INDEX.items()}
 
@@ -49,9 +51,10 @@ def index():
 def selected_game():
     if request.method == 'POST':
         data = request.json
-        related = find_closest(GAME_WEIGHTS[GAME_INDEX[data['game']]])
+        embedding = GAME_WEIGHTS[GAME_INDEX[data['game']]]
+        related = find_closest(embedding)
         tags = GAME_TAGS[data['game']]
-        return jsonify({'related': related, 'tags': tags})
+        return jsonify({'related': related, 'tags': tags, 'embedding': embedding.tolist()})
 
 
 @app.route('/modify-embedding', methods=['POST'])
@@ -59,11 +62,28 @@ def modify_embedding():
     if request.method == 'POST':
         data = request.json
         if data['modification'] == 'addition':
-            pass
-        else:
+            related, embedding = add_tag(data['tag'], data['game'], data['embedding'])
             return jsonify({
-                'related': subtract_tag(data['tag'], data['game'])
+                'related': related,
+                'embedding': embedding.tolist()
             })
+        else:
+            related, embedding = subtract_tag(data['tag'], data['game'], data['embedding'])
+            remove_self(data['game'], related)
+            return jsonify({
+                'related': related,
+                'embedding': embedding.tolist()
+            })
+
+
+def remove_self(game, related):
+    """
+
+    :param game:
+    :param related:
+    :return:
+    """
+    return [i for i in related if i[0] != game]
 
 
 def find_closest(game_embedding: np.array):
@@ -73,7 +93,25 @@ def find_closest(game_embedding: np.array):
     return [(INDEX_GAME[i], f'{dists[i]:.{2}}') for i in reversed(closest)]
 
 
-def subtract_tag(tag: str, game: str) -> np.array:
+def add_tag(tag: str, game: str, embedding: List[float]) -> np.array:
+    """
+    Subtracts a tag embedding from a game embedding and normalises
+
+    :type tag: str
+    :param tag: Tag to add to game embedding
+    :type game: str
+    :param game: Game which tag embedding is added to
+    :rtype: np.array
+    :return: New game array with the tag embedding added
+    """
+    new_game_weight = np.array(embedding) + TAG_WEIGHTS[TAG_INDEX[tag]]
+    return (
+        find_closest(new_game_weight / np.linalg.norm(new_game_weight).reshape((-1, 1))[0]),
+        new_game_weight,
+    )
+
+
+def subtract_tag(tag: str, game: str, embedding: List[float]) -> np.array:
     """
     Subtracts a tag embedding from a game embedding and normalises
 
@@ -84,9 +122,10 @@ def subtract_tag(tag: str, game: str) -> np.array:
     :rtype: np.array
     :return: New game array with the tag embedding removed
     """
-    new_game_weight = GAME_WEIGHTS[GAME_INDEX[game]] - TAG_WEIGHTS[TAG_INDEX[tag]]
-    return find_closest(
-        new_game_weight / np.linalg.norm(new_game_weight).reshape((-1, 1))[0]
+    new_game_weight = np.array(embedding) - TAG_WEIGHTS[TAG_INDEX[tag]]
+    return (
+        find_closest(new_game_weight / np.linalg.norm(new_game_weight).reshape((-1, 1))[0]),
+        new_game_weight,
     )
 
 
