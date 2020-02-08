@@ -8,8 +8,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 {% endblock %}
 {% block scripts %}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script>
     var gamesAutocomplete = JSON.parse('{{games_autocomplete | tojson }}')
     var allTags = JSON.parse('{{all_tags | tojson }}')
@@ -109,6 +109,17 @@
 
   clearCheckboxTags();
 
+  // parallax init, only works when both inits are used.
+  $(document).ready(function(){
+    console.log($('.parallax'))
+    $('.parallax').parallax();
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const elems = document.querySelectorAll('.parallax');
+    const _ = M.Parallax.init(elems);
+  });
+
+
   </script>
 {{super()}}
 {% endblock %}
@@ -120,6 +131,11 @@
       <a class="brand-logo center">Steam Game Recommender</a>
     </div>
   </nav>
+  <div class="parallax-container">
+    <div class="parallax">
+      <img src="static/images/parallax.jpg">
+    </div>
+  </div>
 
 
   {{ container() }}
@@ -198,9 +214,4 @@
       </table>
     </div>
   </div>
-
-
-
-
-
 {% endblock %}
