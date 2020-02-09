@@ -100,10 +100,17 @@
     }
   }
 
-  const ac = document.querySelector('.autocomplete');
-  var instance = M.Autocomplete.init(ac, {
+  const acGame = document.querySelector('.gameAutocomplete');
+  const instanceGame = M.Autocomplete.init(acGame, {
     minLength: 3,
     data: gamesAutocomplete,
+    onAutocomplete: getRecommendations
+  });
+
+  const acTag = document.querySelector('.tagAutocomplete');
+  const instanceTag = M.Autocomplete.init(acTag, {
+    minLength: 2,
+    data: Object.assign(...allTags.map(k => ({[k]: null}))),
     onAutocomplete: getRecommendations
   });
 
@@ -111,7 +118,6 @@
 
   // parallax init, only works when both inits are used.
   $(document).ready(function(){
-    console.log($('.parallax'))
     $('.parallax').parallax();
   });
   document.addEventListener('DOMContentLoaded', function() {
@@ -143,9 +149,9 @@
     <div class="col s12">
       <div class="row">
         <div class="input-field col s12">
-          <i class="material-icons prefix">textsms</i>
-          <input type="text" id="autocomplete-input" class="autocomplete">
-          <label for="autocomplete-input">Enter a Game</label>
+          <i class="material-icons prefix">videogame_asset</i>
+          <input type="text" id="autocomplete-game-input" class="gameAutocomplete">
+          <label for="autocomplete-game-input">Enter a Game</label>
         </div>
       </div>
     </div>
@@ -169,6 +175,15 @@
     <h5>Tags</h5>
     <div class="row">
       <div id="tags">
+      </div>
+      <div class="col s12">
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">label</i>
+            <input type="text" id="autocomplete-tag-input" class="tagAutocomplete">
+            <label for="autocomplete-tag-input">Search for a Tag</label>
+          </div>
+        </div>
       </div>
       <table class="highlight" id="tagTable">
         <tbody>
