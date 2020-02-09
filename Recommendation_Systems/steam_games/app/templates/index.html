@@ -111,7 +111,7 @@
   const instanceTag = M.Autocomplete.init(acTag, {
     minLength: 2,
     data: Object.assign(...allTags.map(k => ({[k]: null}))),
-    onAutocomplete: getRecommendations
+    onAutocomplete: updateTag
   });
 
   clearCheckboxTags();
