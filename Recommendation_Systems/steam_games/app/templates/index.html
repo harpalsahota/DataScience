@@ -11,8 +11,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script>
-    var gamesAutocomplete = JSON.parse('{{games_autocomplete | tojson }}')
-    var allTags = JSON.parse('{{all_tags | tojson }}')
+    const gamesAutocomplete = JSON.parse('{{games_autocomplete | tojson }}');
+    const allTags = JSON.parse('{{all_tags | tojson }}');
   </script>
   <script>
 
@@ -114,8 +114,6 @@
     onAutocomplete: updateTag
   });
 
-  clearCheckboxTags();
-
   // parallax init, only works when both inits are used.
   $(document).ready(function(){
     $('.parallax').parallax();
@@ -142,12 +140,51 @@
       <img src="static/images/parallax.jpg">
     </div>
   </div>
+  <div class="container">
+    <div class="section">
+      <div>
+        <div class="row">
+          <div class="col s12 m8 l8 offset-m2 offset-l2">
+            <p>
+              This Steam game recommender was built with a neural network using game tag data. The tag data is based on
+              users who have tagged a game with a given tag e.g. “FPS” for “Counter-Strike: Global Offensive” has been
+              tagged over 84,000 times. These tags are then used by the neural network to understand how these tags are
+              “related” to the game.<br><br>
+              This recommendation engine is slightly different from other engines in that it is possible for the user to
+              modify their recommendations. By entering a game below, the recommendations for that game is returned. It is
+              now possible to change the recommendation by removing or adding the influence of a given tag. For example
+              searching for “Total War: WARHAMMER II” will return a set of recommendations and below it the user defined
+              tags. It now possible to remove the “Fantasy” influence of the game recommendation by clicking the “Fantasy”
+              tag button or searching for it in the tag table, doing so will return a new list of recommendations. The
+              influence of other tags can be added by searching for them and selecting them in the tag table.
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12 m4 offset-m2">
+            <div class="icon-block">
+              <h2 class="center light-blue-text"><i class="large material-icons">videogame_asset</i></h2>
+              <h5 class="center">{{ n_games }} Games in the Recommendation Engine</h5>
+            </div>
+          </div>
+          <div class="col s12 m4">
+            <div class="icon-block">
+              <h2 class="center light-blue-text"><i class="large material-icons">label</i></h2>
+              <h5 class="center">{{ n_tags }} Tags to Modify the Recommendation with</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
 
   {{ container() }}
   <div class="row">
-    <div class="col s12">
+    <div class="col s12 m8 l8 offset-m2 offset-l2">
       <div class="row">
+        <h4>Search for a Game</h4>
         <div class="input-field col s12">
           <i class="material-icons prefix">videogame_asset</i>
           <input type="text" id="autocomplete-game-input" class="gameAutocomplete">
@@ -159,74 +196,103 @@
   {{ enddiv() }}
   <div class="container">
     <div class="row hide" id="recGamesContainer">
-      <h3>Similar Games</h3>
-      <table class="highlight" id="recGames">
-        <thead>
-        <tr>
-          <th>Game</th>
-          <th>Similarity</th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
-    <h4>Modify Recommendations</h4>
-    <h5>Tags</h5>
-    <div class="row">
-      <div id="tags">
-      </div>
-      <div class="col s12">
+      <div class="col s12 m8 l8 offset-m2 offset-l2">
+        <h3>Similar Games</h3>
+        <table class="highlight" id="recGames">
+          <thead>
+          <tr>
+            <th>Game</th>
+            <th>Similarity</th>
+          </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <h4>Modify Recommendations</h4>
+        <p>
+          Modify the recommendations above by clicking the users tag below to remove that tags influence from the recommendation
+          or search for a tag in the tag table to add / remove a tags influence from the recommendation.
+        </p>
+        <h5>User Tags</h5>
         <div class="row">
-          <div class="input-field col s12">
-            <i class="material-icons prefix">label</i>
-            <input type="text" id="autocomplete-tag-input" class="tagAutocomplete">
-            <label for="autocomplete-tag-input">Search for a Tag</label>
+          <div id="tags">
           </div>
+          <div class="col s12">
+            <div class="row">
+              <h5>Tag Table</h5>
+              <div class="input-field col s12">
+                <i class="material-icons prefix">label</i>
+                <input type="text" id="autocomplete-tag-input" class="tagAutocomplete">
+                <label for="autocomplete-tag-input">Search for a Tag</label>
+              </div>
+            </div>
+          </div>
+          <table class="highlight" id="tagTable">
+            <tbody>
+            {% for i in range(0, all_tags|length, 5) %}
+            <tr>
+              {% if all_tags[i] %}
+              <td>
+                <label>
+                  <input type="checkbox" class="filled-in" id="{{all_tags[i]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i]}}')"/>
+                  <span>{{ all_tags[i] }}</span>
+                </label>
+              </td>
+              {% endif %}
+              {% if all_tags[i+1] %}
+              <td>
+                <label>
+                  <input type="checkbox" class="filled-in" id="{{all_tags[i+1]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+1]}}')"/>
+                  <span>{{ all_tags[i+1] }}</span>
+                </label>
+              </td>
+              {% endif %}
+              {% if all_tags[i+2] %}
+              <td>
+                <label>
+                  <input type="checkbox" class="filled-in" id="{{all_tags[i+2]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+2]}}')"/>
+                  <span>{{ all_tags[i+2] }}</span>
+                </label>
+              </td>
+              {% endif %}
+              {% if all_tags[i+3] %}
+              <td>
+                <label>
+                  <input type="checkbox" class="filled-in" id="{{all_tags[i+3]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+3]}}')"/>
+                  <span>{{ all_tags[i+3] }}</span>
+                </label>
+              </td>
+              {% endif %}
+              {% if all_tags[i+4] %}
+              <td>
+                <label onclick="updateTag('{{all_tags[i+4]}}')">
+                  <input type="checkbox" class="filled-in" id="{{all_tags[i+4]}}CheckboxTag" checked="checked"/>
+                  <span>{{ all_tags[i+4] }}</span>
+                </label>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+          </table>
         </div>
       </div>
-      <table class="highlight" id="tagTable">
-        <tbody>
-        {% for i in range(0, all_tags|length, 5) %}
-        <tr>
-          <td>
-            <label>
-              <input type="checkbox" class="filled-in" id="{{all_tags[i]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i]}}')"/>
-              <span>{{ all_tags[i] }}</span>
-            </label>
-          </td>
-          <td>
-            <label>
-              <input type="checkbox" class="filled-in" id="{{all_tags[i+1]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+1]}}')"/>
-              <span>{{ all_tags[i+1] }}</span>
-            </label>
-          </td>
-          <td>
-            <label>
-              <input type="checkbox" class="filled-in" id="{{all_tags[i+2]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+2]}}')"/>
-              <span>{{ all_tags[i+2] }}</span>
-            </label>
-          </td>
-          {% if all_tags[i+3] %}
-            <td>
-              <label>
-                <input type="checkbox" class="filled-in" id="{{all_tags[i+3]}}CheckboxTag" checked="checked" onclick="updateTag('{{all_tags[i+3]}}')"/>
-                <span>{{ all_tags[i+3] }}</span>
-              </label>
-            </td>
-          {% endif %}
-          {% if all_tags[i+4] %}
-            <td>
-              <label onclick="updateTag('{{all_tags[i+4]}}')">
-                <input type="checkbox" class="filled-in" id="{{all_tags[i+4]}}CheckboxTag" checked="checked"/>
-                <span>{{ all_tags[i+4] }}</span>
-              </label>
-            </td>
-          {% endif %}
-        </tr>
-        {% endfor %}
-        </tbody>
-      </table>
     </div>
   </div>
+
+  <footer class="page-footer" style="margin-top: 300px;">
+    <div class="container">
+      <div class="row">
+        <div class="col l6 s12">
+        </div>
+        <div class="col l4 offset-l2 s12">
+          <h5 class="white-text"></h5>
+        </div>
+      </div>
+    </div>
+    <div class="footer-copyright">
+      <div class="container">
+      </div>
+    </div>
+  </footer>
 {% endblock %}
