@@ -43,7 +43,9 @@ def index():
     return render_template(
         'index.html',
         games_autocomplete=GAME_AUTOCOMPLETE,
-        all_tags=sorted(list(TAG_INDEX.keys()))
+        all_tags=sorted(list(TAG_INDEX.keys())),
+        n_games=len(GAME_INDEX),
+        n_tags=len(TAG_INDEX),
     )
 
 
