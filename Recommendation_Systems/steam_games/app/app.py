@@ -18,7 +18,7 @@ import numpy as np
 JSON = Union[str, int, float, bool, None, Mapping[str, 'JSON'], List['JSON']]
 
 with open('./data/games_none.json', 'r') as none_json,\
-    open('./data/games_with_tags_double_filter.json', 'r') as data_json:
+        open('./data/games_with_tags_double_filter.json', 'r') as data_json:
     GAME_AUTOCOMPLETE = json.load(none_json)
     GAME_TAGS = json.load(data_json)
 
@@ -28,8 +28,12 @@ INDEX_GAME = {idx: game for game, idx in GAME_INDEX.items()}
 GAME_WEIGHTS = np.load('./data/game_weights_200.pkl', allow_pickle=True)
 TAG_WEIGHTS = np.load('./data/tag_weights_200.pkl', allow_pickle=True)
 
-GAME_WEIGHTS = GAME_WEIGHTS / np.linalg.norm(GAME_WEIGHTS, axis=1).reshape((-1, 1))
-TAG_WEIGHTS = TAG_WEIGHTS / np.linalg.norm(TAG_WEIGHTS, axis=1).reshape((-1, 1))
+GAME_WEIGHTS = (
+        GAME_WEIGHTS / np.linalg.norm(GAME_WEIGHTS, axis=1).reshape((-1, 1))
+)
+TAG_WEIGHTS = (
+        TAG_WEIGHTS / np.linalg.norm(TAG_WEIGHTS, axis=1).reshape((-1, 1))
+)
 
 tag_count = 0
 TAG_INDEX = {}
@@ -102,7 +106,10 @@ def modify_embedding() -> JSON:
             })
 
 
-def _remove_self(game: str, related: List[Tuple[str, float]]) -> List[Tuple[str, float]]:
+def _remove_self(
+        game: str,
+        related: List[Tuple[str, float]]
+) -> List[Tuple[str, float]]:
     """
     Removes the selected game from the list of recommendations
 
@@ -141,10 +148,8 @@ def add_tag(tag: str, embedding: List[float]) -> np.array:
     :return: New game array with the tag embedding added
     """
     new_game_weight = np.array(embedding) + TAG_WEIGHTS[TAG_INDEX[tag]]
-    return (
-        find_closest(new_game_weight / np.linalg.norm(new_game_weight).reshape((-1, 1))[0]),
-        new_game_weight,
-    )
+    ne = new_game_weight / np.linalg.norm(new_game_weight).reshape((-1, 1))[0]
+    return find_closest(ne), new_game_weight
 
 
 def subtract_tag(tag: str, embedding: List[float]) -> np.array:
@@ -157,10 +162,8 @@ def subtract_tag(tag: str, embedding: List[float]) -> np.array:
     :return: New game array with the tag embedding removed
     """
     new_game_weight = np.array(embedding) - TAG_WEIGHTS[TAG_INDEX[tag]]
-    return (
-        find_closest(new_game_weight / np.linalg.norm(new_game_weight).reshape((-1, 1))[0]),
-        new_game_weight,
-    )
+    ne = new_game_weight / np.linalg.norm(new_game_weight).reshape((-1, 1))[0]
+    return find_closest(ne), new_game_weight
 
 
 if __name__ == '__main__':
