@@ -6,6 +6,7 @@
 {{super()}}
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <link rel="stylesheet" href="static/css/styles.css">
 {% endblock %}
 {% block scripts %}
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -20,10 +21,16 @@
   let embedding = null;
 
   function clearCheckboxTags() {
-      const _ = [].slice.call(document.getElementsByClassName('filled-in')).map(function(e) { e.removeAttribute('checked') })
+    /*
+    Un-checks all of the check boxes
+    */
+    const _ = [].slice.call(document.getElementsByClassName('filled-in')).map(function(e) { e.removeAttribute('checked') })
   }
 
   function updateCollection(data){
+    /*
+    Add the tag button and checks the tag in the table
+    */
     updateRelated(data);
     clearCheckboxTags();
     const tagEl = document.getElementById('tags');
@@ -35,16 +42,24 @@
   }
 
   function updateRelated(data){
-    document.getElementById('recGamesContainer').classList.remove('hide');
+    /*
+    Updates the related games in the table
+    */
+    const el = document.getElementById('recGamesContainer');
+    el.classList.remove('hide');
     const tableEl = document.getElementById('recGames');
     const tbody = tableEl.children[1];
     tbody.innerHTML = "";
     data['related'].forEach(function(game){
-      tbody.innerHTML += '<tr><td>'+game[0]+'</td><td>'+game[1]+'</td>'
+      tbody.innerHTML += '<tr><td>'+game[0]+'</td><td>'+game[1]+'</td>';
     });
+    setTimeout(function(){el.style.opacity = '1';}, 200)
   }
 
   function getRecommendations(game){
+    /*
+    Makes a post request to get the related games for the selected game
+    */
     selectedGame = game;
     $.ajax({
       url: '/recommendation',
@@ -59,7 +74,9 @@
   }
 
   function updateRecommendation(tag, modification) {
-
+    /*
+    Make a post request to modify the embedding and return updated recommendations
+    */
     $.ajax({
       url: '/modify-embedding',
       type: 'POST',
@@ -79,6 +96,9 @@
   }
 
   function removeTag(tag){
+    /*
+    Function on the tag buttons to remove the tag from the embedding
+    */
     updateTag(tag);
     document.getElementById(tag+'CheckboxTag').removeAttribute('checked');
     var el = document.getElementById(tag+'tag');
@@ -86,6 +106,9 @@
   }
 
   function updateTag(tag) {
+    /*
+    Updates the status of the tag in both the tag table and the button (if present)
+    */
     const el = document.getElementById(tag+'CheckboxTag');
     if (el.hasAttribute('checked')) {
       const tagButton = document.getElementById(tag+'tag');
@@ -100,6 +123,7 @@
     }
   }
 
+  // Game autocomplete init
   const acGame = document.querySelector('.gameAutocomplete');
   const instanceGame = M.Autocomplete.init(acGame, {
     minLength: 3,
@@ -107,6 +131,7 @@
     onAutocomplete: getRecommendations
   });
 
+  // Tag autocomplete init
   const acTag = document.querySelector('.tagAutocomplete');
   const instanceTag = M.Autocomplete.init(acTag, {
     minLength: 2,
@@ -131,13 +156,13 @@
 {% block content %}
 
   <nav>
-    <div class="nav-wrapper">
-      <a class="brand-logo center">Steam Game Recommender</a>
+    <div class="nav-wrapper" style="background-color: #516290">
+      <a class="brand-logo center" style="background-color: #516290">Steam Game Recommender</a>
     </div>
   </nav>
   <div class="parallax-container">
     <div class="parallax">
-      <img src="static/images/parallax.jpg">
+      <img src="static/images/parallax3.jpg">
     </div>
   </div>
   <div class="container">
@@ -210,7 +235,7 @@
         </table>
         <h4>Modify Recommendations</h4>
         <p>
-          Modify the recommendations above by clicking the users tag below to remove that tags influence from the recommendation
+          Modify the recommendations above by clicking the user defined tags below to remove that tags influence from the recommendation
           or search for a tag in the tag table to add / remove a tags influence from the recommendation.
         </p>
         <h5>User Tags</h5>
@@ -280,14 +305,9 @@
     </div>
   </div>
 
-  <footer class="page-footer" style="margin-top: 300px;">
+  <footer class="page-footer" style="margin-top: 300px; background-color: #516290">
     <div class="container">
       <div class="row">
-        <div class="col l6 s12">
-        </div>
-        <div class="col l4 offset-l2 s12">
-          <h5 class="white-text"></h5>
-        </div>
       </div>
     </div>
     <div class="footer-copyright">
