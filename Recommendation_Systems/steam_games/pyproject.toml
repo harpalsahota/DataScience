@@ -9,6 +9,7 @@ python = "^3.7"
 flask = "^1.1.1"
 numpy = "^1.18.1"
 flask-material = "^0.1.1"
+gunicorn = "^20.0.4"
 
 [tool.poetry.dev-dependencies]
 pandas = "^0.25.3"
