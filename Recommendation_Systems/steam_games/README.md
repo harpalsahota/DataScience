@@ -26,6 +26,10 @@ required. Change directory to the `app` folder and run:
 This should start a flask web server which is accessible at: http://localhost:5000/. Navigating to this page should
 load the home page with instructions on how to use the recommendation engine.
 
+For this on UNIX based OS it is possible to run the app via [gunicorn](https://gunicorn.org/) with:
+
+> gunicorn -w 2 wsgi:app
+
 ### Docker
 
 ## Acknowledgments
