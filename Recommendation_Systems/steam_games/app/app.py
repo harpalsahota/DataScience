@@ -144,6 +144,8 @@ def add_tag(tag: str, embedding: List[float]) -> np.array:
 
     :type tag: str
     :param tag: Tag to add to game embedding
+    :type embedding: List[float]
+    :param embedding: current embedding to modify
     :rtype: np.array
     :return: New game array with the tag embedding added
     """
@@ -158,6 +160,8 @@ def subtract_tag(tag: str, embedding: List[float]) -> np.array:
 
     :type tag: str
     :param tag: Tag to subtract from game embedding
+    :type embedding: List[float]
+    :param embedding: current embedding to modify
     :rtype: np.array
     :return: New game array with the tag embedding removed
     """
