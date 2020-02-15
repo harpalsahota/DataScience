@@ -25,10 +25,8 @@ with open('./data/games_none.json', 'r') as none_json,\
 GAME_INDEX = {game: idx for idx, game in enumerate(GAME_TAGS)}
 INDEX_GAME = {idx: game for game, idx in GAME_INDEX.items()}
 
-# GAME_WEIGHTS = np.load('./data/game_weights_200.pkl', allow_pickle=True)
-GAME_WEIGHTS = np.load('./game_weights.npy')
-# TAG_WEIGHTS = np.load('./data/tag_weights_200.pkl', allow_pickle=True)
-TAG_WEIGHTS = np.load('./tag_weights.npy')
+GAME_WEIGHTS = np.load('./data/game_weights.npy')
+TAG_WEIGHTS = np.load('./data/tag_weights.npy')
 
 GAME_WEIGHTS = (
         GAME_WEIGHTS / np.linalg.norm(GAME_WEIGHTS, axis=1).reshape((-1, 1))
