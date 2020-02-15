@@ -1,0 +1,10 @@
+version: '3'
+services:
+  steam-game-recommender:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: steam-game-recommender
+    entrypoint: "/bin/sh -c \"gunicorn -w 3 -b 0.0.0.0:5000 wsgi:app --timeout 60\""
+    ports:
+      - "5000:5000"
