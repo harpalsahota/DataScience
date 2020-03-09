@@ -20,6 +20,11 @@
 - https://www.reddit.com/r/datasets/
 - https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research
 
+#### Biology
+
+- [Medical](https://github.com/beamandrew/medical-data)
+- [Protein](https://peptone.io/)
+
 #### Speech
 - https://voice.mozilla.org/data
 
