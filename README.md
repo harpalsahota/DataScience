@@ -23,7 +23,7 @@ This repo contains reference material for myself regarding all things Data Scien
 
 ## Compatibility
 
-All work is done in python 3+. Most of the work will require >= 3.6 as I use a lot of `f-strings`
+All work is done in python 3+. Most of the work will require >= 3.6 as due `f-strings`
 
 ## Requirements
 
