@@ -2,7 +2,10 @@
 
 This repo contains reference material for myself regarding all things Data Science!
 
-Have a look at my personal portfolio at: https://www.drdatascience.co.uk
+## Social and Portfolio
+
+- [Personal Portfolio](https://www.drdatascience.co.uk)
+- [Medium Profile](https://medium.com/@harpalsahota)
 
 ## Directories
 - **AB_Testing**: Notebooks regarding Bayesian AB testing
@@ -12,7 +15,7 @@ Have a look at my personal portfolio at: https://www.drdatascience.co.uk
 - **Deep_Learning**: Notebooks regarding deep learning
 - **fastai**: Notebooks from the fastai course
 - **Kaggle**: Kaggle competition attempts 
-- **Model_API_Example**: Example of datascience model deployment. There is a medium article accompanying this
+- **Model_API_Example**: Example of data science model deployment. There is a medium article accompanying this
 - **Python**: Python tip, tricks, best practise and coding paradigms i've learnt
 - **Recommendation Systems**: Building a recommendation system
 - **sklearn_example**: Examples of sklearn usage along with code snippets
@@ -26,4 +29,4 @@ All work is done in python 3+. Most of the work will require >= 3.6 as I use a l
 
 Any notebooks that require additional packages will have either a `Pipfile` or a `pyproject.toml` listing the
 dependencies. Older projects will be using the `Pipfile` via the `pipenv` package manager. I have now switched to
-using `Poetry` as my dependency manager which utilises the `pyproject.toml` file/
+using `Poetry` as my dependency manager which utilises the `pyproject.toml` file.
