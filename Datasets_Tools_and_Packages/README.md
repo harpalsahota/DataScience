@@ -50,5 +50,16 @@
 
 #### Data Science
 
+- [InterpretML](https://github.com/interpretml/interpret) - Package that incorporates state-of-the-art machine learning interpretability techniques under one roof
 - [Lime](https://github.com/marcotcr/lime) - Trying to explain what machine models are learning or doing
 - [shap](https://github.com/slundberg/shap) - Explain the output of a machine learning model
+
+#### Big Data Packages
+- [Vaex](https://github.com/vaexio/vaex) - Python library for exploring large datasets (very similar to Pandas). For example, 100+gb tabular datasets
+
+#### MLops / Pipelines
+- [Kedro](https://github.com/quantumblacklabs/kedro) - An open-source Python framework for creating reproducible, maintainable and modular data science code
+- [MLflow](https://github.com/mlflow/mlflow) - Platform to streamline machine learning development, including tracking experiments, packaging code into reproducible runs, and sharing and deploying models
+
+#### Front-End 
+- [Streamlit](https://github.com/streamlit/streamlit) - Turn data scripts into sharable web apps
